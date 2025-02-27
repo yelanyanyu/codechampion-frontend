@@ -4,6 +4,10 @@ import { useRouter } from "vue-router";
 import { ref } from "vue";
 import { useStore } from "vuex";
 
+const visibleRules = routes.filter((item, index) => {
+  return item.meta?.isHide !== true;
+});
+
 const router = useRouter();
 const doMenuClick = (key: string) => {
   router.push(key);
@@ -27,6 +31,7 @@ setTimeout(() => {
         <a-menu
           mode="horizontal"
           :selected-keys="selectedKeys"
+          :default-selected-keys="[1]"
           @menu-item-click="doMenuClick"
         >
           <a-menu-item
@@ -44,7 +49,7 @@ setTimeout(() => {
               }"
             />
           </a-menu-item>
-          <a-menu-item :key="item.path" v-for="item in routes">
+          <a-menu-item :key="item.path" v-for="item in visibleRules">
             {{ item.name }}
           </a-menu-item>
         </a-menu>

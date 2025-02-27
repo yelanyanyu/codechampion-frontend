@@ -1,5 +1,5 @@
 import { Module } from "vuex";
-
+// 定义权限枚举
 export const UserRoles = {
   GUEST: "guest",
   USER: "user",
@@ -32,7 +32,7 @@ const user: Module<UserState, any> = {
   actions: {
     fetchUser({ commit }) {
       // TODO: Implement API call to fetch user from backend
-      const fetchedUser = { username: "yelanyanyu", role: UserRoles.ADMIN }; // Example role
+      const fetchedUser = { username: "yelanyanyu", role: UserRoles.GUEST }; // Example role
       commit("setUser", fetchedUser);
     },
   },
