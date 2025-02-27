@@ -3,16 +3,20 @@ import BasicLayout from "@/layouts/BasicLayout.vue";
 import { useStore } from "vuex";
 import { UserRoles } from "@/store/user";
 import { useRouter } from "vue-router";
+import { hasAccess } from "@/access/access";
+import { PageAccess } from "@/access/types";
 
 const store = useStore();
 const router = useRouter();
 
 router.beforeEach((to, from, next) => {
-  console.log(store.state.user?.user?.role);
-  if (
-    to.meta.access === "canAdmin" &&
-    store.state.user?.user?.role !== UserRoles.ADMIN
-  ) {
+  /*
+   获取页面权限, 这句话的作用是获取页面权限，并将其转换为 AccessType 类型,
+   也就是说 to.meta.access 的值只能是 'canAdmin' 或 'canRead' 或 'canWrite'
+  */
+  const pageAccess = to.meta.access as PageAccess;
+  // 如果页面需要权限，并且当前用户没有权限，则跳转到无权限页面
+  if (pageAccess && !hasAccess(store.state.user.user, pageAccess)) {
     next("/noAuth");
     return;
   }

@@ -3,6 +3,7 @@ import HomeView from "@/views/HomeView.vue";
 import NoAuthView from "@/views/NoAuthView.vue";
 import AdminView from "@/views/AdminView.vue";
 import HideView from "@/views/HideView.vue";
+import { PageAccess } from "@/access/types";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -29,7 +30,7 @@ export const routes: Array<RouteRecordRaw> = [
     name: "管理员",
     component: AdminView,
     meta: {
-      access: "canAdmin",
+      access: PageAccess.ADMIN,
     },
   },
   {

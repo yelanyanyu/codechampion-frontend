@@ -1,12 +1,39 @@
 <script setup lang="ts">
 import { routes } from "@/router/routes";
 import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
+import { UserRoles } from "@/store/user";
+import { hasAccess } from "@/access/roleAccess";
+import { PageAccess } from "@/access/types";
 
-const visibleRules = routes.filter((item, index) => {
-  return item.meta?.isHide !== true;
+// const visibleRules = routes.filter((item, index) => {
+//   return item.meta?.isHide !== true;
+// });
+const store = useStore();
+
+// const visibleRules = routes.filter((item, index) => {
+//   if (item.meta?.isHide) {
+//     return false;
+//   }
+//   if (!hasAccess(store.state.user.user, item.meta?.access as PageAccess)) {
+//     return false;
+//   }
+//   return true;
+// });
+const visibleRules = computed(() => {
+  return routes.filter((item, index) => {
+    if (item.meta?.isHide) {
+      return false;
+    }
+    if (!hasAccess(store.state.user.user, item.meta?.access as PageAccess)) {
+      return false;
+    }
+    return true;
+  });
 });
+
+console.log("visible: ", visibleRules);
 
 const router = useRouter();
 const doMenuClick = (key: string) => {
@@ -18,9 +45,11 @@ router.afterEach((to, from, failure) => {
   selectedKeys.value = [to.path];
 });
 
-const store = useStore();
 setTimeout(() => {
-  store.dispatch("user/fetchUser", { username: "yelanyanyu" });
+  store.dispatch("user/fetchUser", {
+    username: "yelanyanyu",
+    role: UserRoles.ADMIN,
+  });
 }, 3000);
 </script>
 

@@ -1,15 +1,15 @@
 import { Module } from "vuex";
 // 定义权限枚举
-export const UserRoles = {
-  GUEST: "guest",
-  USER: "user",
-  ADMIN: "admin",
-};
+export enum UserRoles {
+  GUEST = "guest",
+  USER = "user",
+  ADMIN = "admin",
+}
 
 interface UserState {
   user: {
     username: string;
-    role: string;
+    role: UserRoles;
   } | null;
 }
 
@@ -30,10 +30,10 @@ const user: Module<UserState, any> = {
     },
   },
   actions: {
-    fetchUser({ commit }) {
+    fetchUser({ commit }, payload) {
       // TODO: Implement API call to fetch user from backend
-      const fetchedUser = { username: "yelanyanyu", role: UserRoles.GUEST }; // Example role
-      commit("setUser", fetchedUser);
+      console.log("payload: ", payload);
+      commit("setUser", payload);
     },
   },
   getters: {
