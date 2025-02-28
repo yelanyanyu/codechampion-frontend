@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BasicLayout from "@/layouts/BasicLayout.vue";
 import { useStore } from "vuex";
-import { UserRoles } from "@/store/user";
+import { UserRole } from "@/store/user";
 import { useRouter } from "vue-router";
 import { PageAccess } from "@/access/types";
 import { hasAccess } from "@/access/roleAccess";

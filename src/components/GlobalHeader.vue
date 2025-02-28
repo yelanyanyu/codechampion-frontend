@@ -3,9 +3,8 @@ import { routes } from "@/router/routes";
 import { useRouter } from "vue-router";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
-import { UserRoles } from "@/store/user";
 import { hasAccess } from "@/access/roleAccess";
-import { PageAccess } from "@/access/types";
+import { PageAccess, UserRole } from "@/access/types";
 
 // const visibleRules = routes.filter((item, index) => {
 //   return item.meta?.isHide !== true;
@@ -46,9 +45,9 @@ router.afterEach((to, from, failure) => {
 });
 
 setTimeout(() => {
-  store.dispatch("user/fetchUser", {
+  store.dispatch("user/getLoginUser", {
     username: "yelanyanyu",
-    role: UserRoles.ADMIN,
+    role: UserRole.ADMIN,
   });
 }, 3000);
 </script>

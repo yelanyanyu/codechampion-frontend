@@ -1,15 +1,11 @@
 import { Module } from "vuex";
-// 定义权限枚举
-export enum UserRoles {
-  GUEST = "guest",
-  USER = "user",
-  ADMIN = "admin",
-}
+import { UserControllerService } from "../../generated";
+import { UserRole } from "@/access/types";
 
 interface UserState {
   user: {
     username: string;
-    role: UserRoles;
+    role: UserRole;
   } | null;
 }
 
@@ -18,7 +14,7 @@ const user: Module<UserState, any> = {
   state: {
     user: {
       username: "未登录",
-      role: UserRoles.GUEST,
+      role: UserRole.GUEST,
     },
   },
   mutations: {
@@ -30,10 +26,17 @@ const user: Module<UserState, any> = {
     },
   },
   actions: {
-    fetchUser({ commit }, payload) {
+    async getLoginUser({ commit, state }, payload) {
       // TODO: Implement API call to fetch user from backend
-      console.log("payload: ", payload);
-      commit("setUser", payload);
+      const res = await UserControllerService.getLoginUserUsingGet();
+      if (res.code === 0) {
+        commit("updateUser", res.data);
+      } else {
+        commit("updateUser", {
+          ...state.user,
+          role: UserRole.GUEST,
+        });
+      }
     },
   },
   getters: {

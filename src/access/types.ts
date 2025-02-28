@@ -6,3 +6,10 @@ export enum PageAccess {
   USER = "canRead",
   GUEST = "canWrite",
 }
+
+// 定义权限枚举
+export enum UserRole {
+  GUEST = "guest",
+  USER = "user",
+  ADMIN = "admin",
+}
