@@ -1,52 +1,40 @@
-import { Module } from "vuex";
+import { Module, StoreOptions } from "vuex";
 import { UserControllerService } from "../../generated";
 import { UserRole } from "@/access/types";
 
 interface UserState {
-  user: {
-    username: string;
-    role: UserRole;
+  loginUser: {
+    userName: string;
   } | null;
 }
 
-const user: Module<UserState, any> = {
+export default {
   namespaced: true,
   state: {
-    user: {
-      username: "未登录",
-      role: UserRole.GUEST,
+    loginUser: {
+      userName: "未登录",
     },
   },
   mutations: {
-    setUser(state, user) {
-      state.user = user;
-    },
     updateUser(state, user) {
-      state.user = { ...state.user, ...user };
+      // 所以，只有登录了的用户才会拥有 userRole，而游客是不会有的。
+      state.loginUser = { ...state.loginUser, ...user };
+      console.log(state.loginUser);
     },
   },
   actions: {
     async getLoginUser({ commit, state }, payload) {
       // TODO: Implement API call to fetch user from backend
       const res = await UserControllerService.getLoginUserUsingGet();
+      console.log("login user: ", res.data);
       if (res.code === 0) {
         commit("updateUser", res.data);
       } else {
         commit("updateUser", {
-          ...state.user,
+          ...state.loginUser,
           role: UserRole.GUEST,
         });
       }
     },
   },
-  getters: {
-    isLoggedIn(state) {
-      return !!state.user;
-    },
-    getUser(state) {
-      return state.user;
-    },
-  },
-};
-
-export default user;
+} as StoreOptions<any>;

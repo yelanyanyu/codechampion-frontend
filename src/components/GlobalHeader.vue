@@ -45,10 +45,7 @@ router.afterEach((to, from, failure) => {
 });
 
 setTimeout(() => {
-  store.dispatch("user/getLoginUser", {
-    username: "yelanyanyu",
-    role: UserRole.ADMIN,
-  });
+  store.dispatch("user/getLoginUser");
 }, 3000);
 </script>
 
@@ -84,7 +81,7 @@ setTimeout(() => {
       </a-col>
       <a-col flex="100px">
         <div>
-          {{ store.state.user?.user?.username ?? "未登录" }}
+          {{ store.state.user?.loginUser.userName ?? "未登录" }}
         </div>
       </a-col>
     </a-row>
