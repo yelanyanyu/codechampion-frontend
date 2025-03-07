@@ -18,8 +18,7 @@ export default {
   mutations: {
     updateUser(state, user) {
       // 所以，只有登录了的用户才会拥有 userRole，而游客是不会有的。
-      state.loginUser = { ...state.loginUser, ...user };
-      console.log(state.loginUser);
+      state.loginUser = { userName: user.userName, userRole: user.userRole };
     },
   },
   actions: {

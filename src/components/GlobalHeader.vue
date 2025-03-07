@@ -6,26 +6,17 @@ import { useStore } from "vuex";
 import { hasAccess } from "@/access/roleAccess";
 import { PageAccess, UserRole } from "@/access/types";
 
-// const visibleRules = routes.filter((item, index) => {
-//   return item.meta?.isHide !== true;
-// });
 const store = useStore();
 
-// const visibleRules = routes.filter((item, index) => {
-//   if (item.meta?.isHide) {
-//     return false;
-//   }
-//   if (!hasAccess(store.state.user.user, item.meta?.access as PageAccess)) {
-//     return false;
-//   }
-//   return true;
-// });
 const visibleRules = computed(() => {
   return routes.filter((item, index) => {
     if (item.meta?.isHide) {
       return false;
     }
-    if (!hasAccess(store.state.user.user, item.meta?.access as PageAccess)) {
+    const loginUser = store.state.user.loginUser;
+    const pageAccess = item.meta?.access as PageAccess;
+    console.log("loginUser: ", loginUser);
+    if (!hasAccess(loginUser, pageAccess)) {
       return false;
     }
     return true;
