@@ -44,30 +44,22 @@ const handleSubmit = async () => {
         <a-form :model="form" class="login-form" @submit="handleSubmit">
           <!-- Username Input -->
           <div class="form-input">
-            <a-form-item>
+            <a-form-item label="用户名">
               <a-input
                 v-model="form.userAccount"
                 placeholder="请输入用户名"
                 allow-clear
-                label="用户名"
               >
-                <template #prefix>
-                  <icon-user />
-                </template>
               </a-input>
             </a-form-item>
 
             <!-- Password Input -->
-            <a-form-item>
+            <a-form-item label="密码">
               <a-input-password
                 v-model="form.userPassword"
                 placeholder="请输入密码"
                 allow-clear
-                label="密码"
               >
-                <template #prefix>
-                  <icon-lock />
-                </template>
               </a-input-password>
             </a-form-item>
           </div>
@@ -127,7 +119,6 @@ const handleSubmit = async () => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #f5f6f7;
 }
 
 .login-box {
