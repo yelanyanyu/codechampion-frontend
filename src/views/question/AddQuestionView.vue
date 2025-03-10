@@ -171,8 +171,8 @@ const form = reactive<QuestionAddRequest>({
     },
   ],
   judgeConfig: {
-    memoryLimit: 1000,
-    stackLimit: 1000,
+    memoryLimit: 1024,
+    stackLimit: 1024,
     timeLimit: 1000,
   },
   tags: ["栈", "简单"],
@@ -188,7 +188,6 @@ const onAnswerChange = (value: string) => {
 };
 
 const handleSubmit = async () => {
-  console.log(form);
   const res = await QuestionControllerService.addQuestionUsingPost(form);
   if (res.code === 0) {
     Message.success("创建成功");
