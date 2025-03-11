@@ -1,4 +1,4 @@
-import { PageAccess } from "@/access/types";
+import { PageAccess, UserRole } from "@/access/types";
 import router from "@/router";
 import store from "@/store";
 import { hasAccess } from "@/access/roleAccess";
@@ -28,7 +28,11 @@ router.beforeEach(async (to, from, next) => {
   // 如果当前页面不需要登录，那么可以直接next
   if (pageAccess != PageAccess.GUEST) {
     // 如果自动登录失败，那么就需要用户手动登录，重定向到登录页面
-    if (!loginUser || !loginUser.userRole) {
+    if (
+      !loginUser ||
+      !loginUser.userRole ||
+      loginUser.userRole === UserRole.GUEST
+    ) {
       next(`/user/login?redirect=${to.fullPath}`);
       return;
     }
