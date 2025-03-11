@@ -9,7 +9,7 @@ router.beforeEach(async (to, from, next) => {
    也就是说 to.meta.access 的值只能是 'canAdmin' 或 'canRead' 或 'canWrite'
   */
   const pageAccess = to.meta?.access as PageAccess;
-  const loginUser = store.state.user.loginUser;
+  let loginUser = store.state.user.loginUser;
   // 如果页面需要权限，并且当前用户没有权限，则跳转到无权限页面
   /*
     有两种情况，登录或者不登陆，所以先判断用户是否登录：
@@ -17,8 +17,13 @@ router.beforeEach(async (to, from, next) => {
     2. 若已经登录，就尝试判断当前用户是否有权限访问当前页面。
    */
   if (!loginUser || !loginUser.userRole) {
-    // 尝试自动登录，可能成功，也可能失败。
+    /*
+     尝试自动登录，可能成功，也可能失败。
+     这里必须重新更新 loginUser，
+     因为刷新后之后更新 store 中的 loginUser 而不会更新这个函数中作为变量的loginUser
+    */
     await store.dispatch("user/getLoginUser");
+    loginUser = store.state.user.loginUser;
   }
   // 如果当前页面不需要登录，那么可以直接next
   if (pageAccess != PageAccess.GUEST) {

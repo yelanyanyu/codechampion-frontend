@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import { Question, QuestionControllerService } from "../../../generated";
 import { Message } from "@arco-design/web-vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 const dataList = ref([]);
+const total = ref(0);
 const searchParams = ref({
-  pageSize: 10,
-  pageNum: 1,
+  pageSize: 3,
+  current: 3,
 });
 
 const loadData = async () => {
@@ -17,6 +18,7 @@ const loadData = async () => {
   );
   if (res.code === 0) {
     dataList.value = res.data.records;
+    total.value = res.data.total;
   } else {
     Message.error("加载失败" + res.msg);
   }
@@ -98,19 +100,41 @@ const doDelete = async (question: Question) => {
     Message.error("删除失败" + res.msg);
   }
 };
+const onPageChange = (page: number) => {
+  /*
+    1. 修改 searchParams，通过 watchEffect 函数监听修改
+   */
+  searchParams.value = {
+    ...searchParams.value,
+    current: page,
+  };
+};
+const onPageSizeChange = (pageSize: number) => {
+  searchParams.value = {
+    ...searchParams.value,
+    pageSize: pageSize,
+  };
+};
+
+watchEffect(() => {
+  loadData();
+});
 </script>
 
 <template>
   <div id="manageQuestionView">
     <h2>题目管理</h2>
     <a-table
+      stripe
       :columns="columns"
       :data="dataList"
       :pagination="{
         pageSize: searchParams.pageSize,
-        current: searchParams.pageNum,
+        current: searchParams.current,
         showTotal: true,
+        total,
       }"
+      @page-change="onPageChange"
     >
       <template #optional="{ record }">
         <a-space>

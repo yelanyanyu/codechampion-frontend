@@ -39,7 +39,7 @@ export const routes: Array<RouteRecordRaw> = [
     name: "添加题目",
     component: AddQuestionView,
     meta: {
-      access: PageAccess.ADMIN,
+      access: PageAccess.USER,
     },
   },
   {
@@ -47,7 +47,7 @@ export const routes: Array<RouteRecordRaw> = [
     name: "管理题目",
     component: ManageQuestionView,
     meta: {
-      access: PageAccess.ADMIN,
+      access: PageAccess.USER,
       // isHide: true,
     },
   },
@@ -57,6 +57,7 @@ export const routes: Array<RouteRecordRaw> = [
     component: AddQuestionView,
     meta: {
       isHide: true,
+      access: PageAccess.USER,
     },
   },
   {
@@ -64,34 +65,37 @@ export const routes: Array<RouteRecordRaw> = [
     name: "浏览题目",
     component: ExampleView,
   },
-  {
-    path: "/about",
-    name: "关于我的",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
-  },
+  // {
+  //   path: "/about",
+  //   name: "关于我的",
+  //   // route level code-splitting
+  //   // this generates a separate chunk (about.[hash].js) for this route
+  //   // which is lazy-loaded when the route is visited.
+  //   component: () =>
+  //     import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
+  // },
   {
     path: "/noAuth",
     name: "没有权限",
     component: NoAuthView,
-  },
-  {
-    path: "/admin",
-    name: "管理员",
-    component: AdminView,
-    meta: {
-      access: PageAccess.ADMIN,
-    },
-  },
-  {
-    path: "/hide",
-    name: "隐藏页面",
-    component: HideView,
     meta: {
       isHide: true,
     },
   },
+  // {
+  //   path: "/admin",
+  //   name: "管理员",
+  //   component: AdminView,
+  //   meta: {
+  //     access: PageAccess.ADMIN,
+  //   },
+  // },
+  // {
+  //   path: "/hide",
+  //   name: "隐藏页面",
+  //   component: HideView,
+  //   meta: {
+  //     isHide: true,
+  //   },
+  // },
 ];
