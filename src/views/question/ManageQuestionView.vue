@@ -13,6 +13,7 @@ const loadData = async () => {
   const res = await QuestionControllerService.listQuestionByPageUsingPost(
     searchParams.value
   );
+  console.log("res", res.data);
   if (res.code === 0) {
     dataList.value = res.data.records;
   } else {
@@ -76,12 +77,20 @@ const columns = [
   },
 ];
 
-const doUpdate = (question: Question) => {
+const doUpdate = async (question: Question) => {
   console.log(question);
 };
 
-const doDelete = (question: Question) => {
-  console.log(question);
+const doDelete = async (question: Question) => {
+  const res = await QuestionControllerService.deleteQuestionUsingPost({
+    id: question.id,
+  });
+  if (res.code === 0) {
+    Message.success("成功");
+    await loadData();
+  } else {
+    Message.error("失败", res.msg);
+  }
 };
 </script>
 
