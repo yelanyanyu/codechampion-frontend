@@ -10,7 +10,7 @@ const searchParams = ref({
 });
 
 const loadData = async () => {
-  const res = await QuestionControllerService.listMyQuestionVoByPageUsingPost(
+  const res = await QuestionControllerService.listQuestionByPageUsingPost(
     searchParams.value
   );
   if (res.code === 0) {
