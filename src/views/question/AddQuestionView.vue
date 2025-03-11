@@ -153,17 +153,40 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { onMounted, reactive } from "vue";
 import MdEditor from "@/components/MdEditor.vue";
 import {
   QuestionAddRequest,
   QuestionControllerService,
 } from "../../../generated";
 import { Message } from "@arco-design/web-vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+const isUpdate = route.path.includes("update");
+
+const loadData = async () => {
+  const id = route.query.id;
+  if (!id) {
+    return;
+  }
+  const res = await QuestionControllerService.getQuestionByIdUsingGet(
+    id as any
+  );
+  if (res.code === 0) {
+    Object.assign(form, res.data);
+  } else {
+    Message.error("加载失败" + res.message);
+  }
+};
+
+onMounted(() => {
+  loadData();
+});
 
 const form = reactive<QuestionAddRequest>({
-  answer: "暴力破解",
-  content: "题目内容",
+  answer: "",
+  content: "",
   judgeCase: [
     {
       input: "1 2",
