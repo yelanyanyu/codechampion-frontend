@@ -15,15 +15,12 @@ const visibleRules = computed(() => {
     }
     const loginUser = store.state.user.loginUser;
     const pageAccess = item.meta?.access as PageAccess;
-    console.log("loginUser: ", loginUser);
     if (!hasAccess(loginUser, pageAccess)) {
       return false;
     }
     return true;
   });
 });
-
-console.log("visible: ", visibleRules);
 
 const router = useRouter();
 const doMenuClick = (key: string) => {

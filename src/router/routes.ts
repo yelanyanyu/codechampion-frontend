@@ -52,6 +52,14 @@ export const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: "/update/question",
+    name: "修改题目",
+    component: AddQuestionView,
+    meta: {
+      isHide: true,
+    },
+  },
+  {
     path: "/",
     name: "浏览题目",
     component: ExampleView,

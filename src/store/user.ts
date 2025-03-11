@@ -25,7 +25,6 @@ export default {
     async getLoginUser({ commit, state }, payload) {
       // TODO: Implement API call to fetch user from backend
       const res = await UserControllerService.getLoginUserUsingGet();
-      console.log("login user: ", res.data);
       if (res.code === 0) {
         commit("updateUser", res.data);
       } else {

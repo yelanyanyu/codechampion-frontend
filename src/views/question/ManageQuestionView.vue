@@ -2,7 +2,9 @@
 import { onMounted, ref } from "vue";
 import { Question, QuestionControllerService } from "../../../generated";
 import { Message } from "@arco-design/web-vue";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const dataList = ref([]);
 const searchParams = ref({
   pageSize: 10,
@@ -77,11 +79,24 @@ const columns = [
 ];
 
 const doUpdate = (question: Question) => {
-  console.log(question);
+  router.push({
+    path: "/update/question",
+    query: {
+      id: question.id,
+    },
+  });
 };
 
-const doDelete = (question: Question) => {
-  console.log(question);
+const doDelete = async (question: Question) => {
+  const res = await QuestionControllerService.deleteQuestionUsingPost({
+    id: question.id,
+  });
+  if (res.code === 0) {
+    Message.success("删除成功");
+    await loadData();
+  } else {
+    Message.error("删除失败" + res.msg);
+  }
 };
 </script>
 

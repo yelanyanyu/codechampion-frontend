@@ -25,7 +25,6 @@ const handleSubmit = async () => {
     });
   } else {
     Message.error("登陆失败: " + res.message);
-    console.log("login failed: " + res.code);
   }
 };
 </script>
