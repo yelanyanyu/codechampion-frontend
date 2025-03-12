@@ -9,6 +9,7 @@ import UserLoginView from "@/views/UserLoginView.vue";
 import UserRegisterView from "@/views/UserRegisterView.vue";
 import AddQuestionView from "@/views/question/AddQuestionView.vue";
 import ManageQuestionView from "@/views/question/ManageQuestionView.vue";
+import QuestionsView from "@/views/question/QuestionsView.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -62,9 +63,9 @@ export const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: "/",
+    path: "/question",
     name: "浏览题目",
-    component: ExampleView,
+    component: QuestionsView,
   },
   // {
   //   path: "/about",

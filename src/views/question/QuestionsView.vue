@@ -50,26 +50,12 @@ const columns = [
     title: "标题",
     dataIndex: "title",
     width: 200,
+    slotName: "title",
   },
   {
     title: "标签",
     dataIndex: "tags",
     slotName: "tags",
-  },
-  {
-    title: "判题配置",
-    dataIndex: "judgeConfig",
-    slotName: "judgeConfig",
-  },
-  {
-    title: "判题用例",
-    dataIndex: "judgeCase",
-    slotName: "judgeCase",
-  },
-
-  {
-    title: "用户ID",
-    dataIndex: "userId",
   },
   {
     title: "提交/通过",
@@ -86,12 +72,6 @@ const columns = [
     dataIndex: "createTime",
     width: 180,
     slotName: "createTime",
-  },
-  {
-    title: "操作",
-    slotName: "optional",
-    width: 160,
-    fixed: "right",
   },
 ];
 
@@ -148,6 +128,12 @@ watchEffect(() => {
 
 const createNewQuestion = () => {
   router.push("/add/question");
+};
+
+const viewQuestion = (question: Question) => {
+  router.push({
+    path: `/view/question/${question.id}`,
+  });
 };
 </script>
 
@@ -227,12 +213,6 @@ const createNewQuestion = () => {
         border="cell"
         :scroll="{ x: '100%' }"
       >
-        <template #judgeConfig="{ record }">
-          timeLimit: {{ JSON.parse(record.judgeConfig).timeLimit }}ms<br />
-          stackLimit:
-          {{ JSON.parse(record.judgeConfig).stackLimit }}MB <br />memoryLimit:
-          {{ JSON.parse(record.judgeConfig).memoryLimit }}MB
-        </template>
         <template #empty>
           <div class="empty-state">
             <icon-inbox :size="64" />
@@ -242,26 +222,8 @@ const createNewQuestion = () => {
             </a-button>
           </div>
         </template>
-        <template #optional="{ record }">
-          <a-space>
-            <a-button type="text" status="success" @click="doUpdate(record)">
-              <template #icon>
-                <icon-edit />
-              </template>
-              修改
-            </a-button>
-            <a-popconfirm
-              content="确定要删除这个题目吗？此操作不可恢复。"
-              @ok="doDelete(record)"
-            >
-              <a-button type="text" status="danger">
-                <template #icon>
-                  <icon-delete />
-                </template>
-                删除
-              </a-button>
-            </a-popconfirm>
-          </a-space>
+        <template #title="{ record }">
+          <a-link @click="viewQuestion(record)">{{ record.title }}</a-link>
         </template>
         <template #tags="{ record }">
           <a-space wrap>
