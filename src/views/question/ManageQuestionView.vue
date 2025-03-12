@@ -12,6 +12,7 @@ const searchParams = ref({
   pageSize: 10,
   current: 1,
   title: "",
+  tags: [],
 });
 
 const loadData = async () => {
@@ -42,6 +43,7 @@ const columns = [
     title: "ID",
     dataIndex: "id",
     width: 80,
+    ellipsis: true,
   },
   {
     title: "标题",
@@ -51,18 +53,7 @@ const columns = [
   {
     title: "标签",
     dataIndex: "tags",
-    render: ({ record }: { record: Question }) => {
-      try {
-        const tags = record.tags ? JSON.parse(record.tags) : [];
-        return h(
-          "div",
-          {},
-          tags.map((tag: string) => h("a-tag", { key: tag }, tag))
-        );
-      } catch (e) {
-        return h("span", {}, "-");
-      }
-    },
+    slotName: "tags",
   },
   {
     title: "提交/通过",
@@ -163,30 +154,42 @@ const createNewQuestion = () => {
     <div class="content-card">
       <!-- Search and Filters -->
       <div class="search-bar">
-        <a-input-search
-          v-model="searchParams.title"
-          placeholder="搜索题目..."
-          search-button
-          allow-clear
-          @search="handleSearch"
-        />
-        <a-space>
-          <a-select
-            v-model="searchParams.pageSize"
-            :style="{ width: '120px' }"
-            @change="onPageSizeChange"
-          >
-            <a-option :value="10">10 条/页</a-option>
-            <a-option :value="20">20 条/页</a-option>
-            <a-option :value="50">50 条/页</a-option>
-          </a-select>
-          <a-button @click="loadData">
-            <template #icon>
-              <icon-refresh />
-            </template>
-            刷新
-          </a-button>
-        </a-space>
+        <a-form :model="searchParams" layout="inline">
+          <a-form-item field="title" label="名称" style="min-width: 240px">
+            <a-input
+              v-model="searchParams.title"
+              placeholder="请输入名称"
+              allow-clear
+            />
+          </a-form-item>
+          <a-form-item field="tags" label="标签" style="min-width: 240px">
+            <a-input-tag
+              v-model="searchParams.tags"
+              placeholder="请输入标签"
+              allow-clear
+            />
+          </a-form-item>
+          <a-form-item>
+            <a-button @click="handleSearch" type="primary">提交</a-button>
+          </a-form-item>
+          <a-form-item>
+            <a-select
+              v-model="searchParams.pageSize"
+              :style="{ width: '120px' }"
+              @change="onPageSizeChange"
+            >
+              <a-option :value="5">5 条/页</a-option>
+              <a-option :value="10">10 条/页</a-option>
+              <a-option :value="20">20 条/页</a-option>
+            </a-select>
+            <a-button @click="loadData">
+              <template #icon>
+                <icon-refresh />
+              </template>
+              刷新
+            </a-button>
+          </a-form-item>
+        </a-form>
       </div>
 
       <!-- Table -->
@@ -237,6 +240,15 @@ const createNewQuestion = () => {
             </a-popconfirm>
           </a-space>
         </template>
+        <template #tags="{ record }">
+          <a-space wrap>
+            <a-tag
+              v-for="(tag, index) of JSON.parse(record.tags)"
+              :key="index"
+              >{{ tag }}</a-tag
+            >
+          </a-space></template
+        >
       </a-table>
     </div>
   </div>
