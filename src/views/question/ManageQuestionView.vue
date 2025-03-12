@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watchEffect } from "vue";
+import { onMounted, ref, watchEffect, h } from "vue";
 import { Question, QuestionControllerService } from "../../../generated";
 import { Message } from "@arco-design/web-vue";
 import { useRouter } from "vue-router";
@@ -7,20 +7,29 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const dataList = ref([]);
 const total = ref(0);
+const loading = ref(false);
 const searchParams = ref({
-  pageSize: 3,
-  current: 3,
+  pageSize: 10,
+  current: 1,
+  title: "",
 });
 
 const loadData = async () => {
-  const res = await QuestionControllerService.listQuestionByPageUsingPost(
-    searchParams.value
-  );
-  if (res.code === 0) {
-    dataList.value = res.data.records;
-    total.value = res.data.total;
-  } else {
-    Message.error("加载失败" + res.msg);
+  loading.value = true;
+  try {
+    const res = await QuestionControllerService.listQuestionByPageUsingPost(
+      searchParams.value
+    );
+    if (res.code === 0) {
+      dataList.value = res.data.records;
+      total.value = res.data.total;
+    } else {
+      Message.error("加载失败" + res.msg);
+    }
+  } catch (error) {
+    Message.error("加载错误: " + error);
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -30,53 +39,51 @@ onMounted(() => {
 
 const columns = [
   {
-    title: "id",
+    title: "ID",
     dataIndex: "id",
+    width: 80,
   },
   {
     title: "标题",
     dataIndex: "title",
-  },
-  {
-    title: "内容",
-    dataIndex: "content",
+    width: 200,
   },
   {
     title: "标签",
     dataIndex: "tags",
+    render: ({ record }: { record: Question }) => {
+      try {
+        const tags = record.tags ? JSON.parse(record.tags) : [];
+        return h(
+          "div",
+          {},
+          tags.map((tag: string) => h("a-tag", { key: tag }, tag))
+        );
+      } catch (e) {
+        return h("span", {}, "-");
+      }
+    },
   },
   {
-    title: "答案",
-    dataIndex: "answer",
-  },
-  {
-    title: "提交数",
-    dataIndex: "submitNum",
-  },
-  {
-    title: "通过数",
-    dataIndex: "acceptedNum",
-  },
-  {
-    title: "判题配置",
-    dataIndex: "judgeConfig",
-  },
-  {
-    title: "判题用例",
-    dataIndex: "judgeCase",
-  },
-
-  {
-    title: "用户ID",
-    dataIndex: "userId",
+    title: "提交/通过",
+    width: 120,
+    render: ({ record }: { record: Question }) => {
+      return h("div", {}, [
+        h("div", {}, `${record.submitNum || 0} 次提交`),
+        h("div", {}, `${record.acceptedNum || 0} 次通过`),
+      ]);
+    },
   },
   {
     title: "创建时间",
     dataIndex: "createTime",
+    width: 180,
   },
   {
     title: "操作",
     slotName: "optional",
+    width: 160,
+    fixed: "right",
   },
 ];
 
@@ -90,25 +97,36 @@ const doUpdate = (question: Question) => {
 };
 
 const doDelete = async (question: Question) => {
-  const res = await QuestionControllerService.deleteQuestionUsingPost({
-    id: question.id,
-  });
-  if (res.code === 0) {
-    Message.success("删除成功");
-    await loadData();
-  } else {
-    Message.error("删除失败" + res.msg);
+  loading.value = true;
+  try {
+    const res = await QuestionControllerService.deleteQuestionUsingPost({
+      id: question.id,
+    });
+    if (res.code === 0) {
+      Message.success("删除成功");
+      await loadData();
+    } else {
+      Message.error("删除失败" + res.msg);
+    }
+  } catch (error) {
+    Message.error("删除错误: " + error);
+  } finally {
+    loading.value = false;
   }
 };
+
+const handleSearch = () => {
+  searchParams.value.current = 1;
+  loadData();
+};
+
 const onPageChange = (page: number) => {
-  /*
-    1. 修改 searchParams，通过 watchEffect 函数监听修改
-   */
   searchParams.value = {
     ...searchParams.value,
     current: page,
   };
 };
+
 const onPageSizeChange = (pageSize: number) => {
   searchParams.value = {
     ...searchParams.value,
@@ -119,31 +137,194 @@ const onPageSizeChange = (pageSize: number) => {
 watchEffect(() => {
   loadData();
 });
+
+const createNewQuestion = () => {
+  router.push("/add/question");
+};
 </script>
 
 <template>
   <div id="manageQuestionView">
-    <h2>题目管理</h2>
-    <a-table
-      stripe
-      :columns="columns"
-      :data="dataList"
-      :pagination="{
-        pageSize: searchParams.pageSize,
-        current: searchParams.current,
-        showTotal: true,
-        total,
-      }"
-      @page-change="onPageChange"
-    >
-      <template #optional="{ record }">
+    <div class="page-header">
+      <div class="header-content">
+        <h2>题目管理</h2>
+        <p class="subtitle">管理和编辑您的编程题目</p>
+      </div>
+      <div class="header-actions">
+        <a-button type="primary" @click="createNewQuestion">
+          <template #icon>
+            <icon-plus />
+          </template>
+          创建题目
+        </a-button>
+      </div>
+    </div>
+
+    <div class="content-card">
+      <!-- Search and Filters -->
+      <div class="search-bar">
+        <a-input-search
+          v-model="searchParams.title"
+          placeholder="搜索题目..."
+          search-button
+          allow-clear
+          @search="handleSearch"
+        />
         <a-space>
-          <a-button type="primary" @click="doUpdate(record)">修改</a-button>
-          <a-button status="danger" @click="doDelete(record)">删除</a-button>
+          <a-select
+            v-model="searchParams.pageSize"
+            :style="{ width: '120px' }"
+            @change="onPageSizeChange"
+          >
+            <a-option :value="10">10 条/页</a-option>
+            <a-option :value="20">20 条/页</a-option>
+            <a-option :value="50">50 条/页</a-option>
+          </a-select>
+          <a-button @click="loadData">
+            <template #icon>
+              <icon-refresh />
+            </template>
+            刷新
+          </a-button>
         </a-space>
-      </template>
-    </a-table>
+      </div>
+
+      <!-- Table -->
+      <a-table
+        :loading="loading"
+        :columns="columns"
+        :data="dataList"
+        :pagination="{
+          pageSize: searchParams.pageSize,
+          current: searchParams.current,
+          showTotal: true,
+          total: total,
+          showPageSize: true,
+        }"
+        @page-change="onPageChange"
+        @page-size-change="onPageSizeChange"
+        stripe
+        border="cell"
+        :scroll="{ x: '100%' }"
+      >
+        <template #empty>
+          <div class="empty-state">
+            <icon-inbox :size="64" />
+            <p>暂无题目数据</p>
+            <a-button type="outline" @click="createNewQuestion">
+              创建第一个题目
+            </a-button>
+          </div>
+        </template>
+        <template #optional="{ record }">
+          <a-space>
+            <a-button type="text" status="success" @click="doUpdate(record)">
+              <template #icon>
+                <icon-edit />
+              </template>
+              修改
+            </a-button>
+            <a-popconfirm
+              content="确定要删除这个题目吗？此操作不可恢复。"
+              @ok="doDelete(record)"
+            >
+              <a-button type="text" status="danger">
+                <template #icon>
+                  <icon-delete />
+                </template>
+                删除
+              </a-button>
+            </a-popconfirm>
+          </a-space>
+        </template>
+      </a-table>
+    </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+#manageQuestionView {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header-content h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text-1);
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  color: var(--color-text-3);
+  font-size: 14px;
+}
+
+.content-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 0;
+  color: var(--color-text-3);
+}
+
+.empty-state p {
+  margin: 16px 0;
+}
+
+:deep(.arco-table-th) {
+  background-color: var(--color-fill-2) !important;
+  font-weight: 600;
+}
+
+:deep(.arco-pagination) {
+  margin-top: 16px;
+  justify-content: flex-end;
+}
+
+@media screen and (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    margin-top: 16px;
+  }
+
+  .search-bar {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  #manageQuestionView {
+    padding: 16px;
+  }
+
+  .content-card {
+    padding: 16px;
+  }
+}
+</style>

@@ -40,6 +40,7 @@ export const routes: Array<RouteRecordRaw> = [
     component: AddQuestionView,
     meta: {
       access: PageAccess.USER,
+      isHide: true,
     },
   },
   {
