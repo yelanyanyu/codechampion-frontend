@@ -3,6 +3,7 @@ import { onMounted, ref, watchEffect, h } from "vue";
 import { Question, QuestionControllerService } from "../../../generated";
 import { Message } from "@arco-design/web-vue";
 import { useRouter } from "vue-router";
+import moment from "moment";
 
 const router = useRouter();
 const dataList = ref([]);
@@ -69,6 +70,7 @@ const columns = [
     title: "创建时间",
     dataIndex: "createTime",
     width: 180,
+    slotName: "createTime",
   },
   {
     title: "操作",
@@ -249,6 +251,9 @@ const createNewQuestion = () => {
             >
           </a-space></template
         >
+        <template #createTime="{ record }">
+          {{ moment(record.createTime).format("YYYY-MM-DD") }}
+        </template>
       </a-table>
     </div>
   </div>
