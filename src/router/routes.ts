@@ -10,6 +10,7 @@ import UserRegisterView from "@/views/UserRegisterView.vue";
 import AddQuestionView from "@/views/question/AddQuestionView.vue";
 import ManageQuestionView from "@/views/question/ManageQuestionView.vue";
 import QuestionsView from "@/views/question/QuestionsView.vue";
+import ViewQuestionsView from "@/views/question/ViewQuestionsView.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -63,9 +64,19 @@ export const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: "/question",
+    path: "/",
     name: "浏览题目",
     component: QuestionsView,
+  },
+  {
+    path: "/view/question/:id",
+    name: "在线做题",
+    props: true,
+    component: ViewQuestionsView,
+    meta: {
+      access: PageAccess.USER,
+      isHide: true,
+    },
   },
   // {
   //   path: "/about",

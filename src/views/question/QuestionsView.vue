@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref, watchEffect, h } from "vue";
-import { Question, QuestionControllerService } from "../../../generated";
+import {
+  Question,
+  QuestionControllerService,
+  QuestionVO,
+} from "../../../generated";
 import { Message } from "@arco-design/web-vue";
 import { useRouter } from "vue-router";
 import moment from "moment";
@@ -19,7 +23,7 @@ const searchParams = ref({
 const loadData = async () => {
   loading.value = true;
   try {
-    const res = await QuestionControllerService.listQuestionByPageUsingPost(
+    const res = await QuestionControllerService.listQuestionVoByPageUsingPost(
       searchParams.value
     );
     if (res.code === 0) {
@@ -60,7 +64,7 @@ const columns = [
   {
     title: "提交/通过",
     width: 120,
-    render: ({ record }: { record: Question }) => {
+    render: ({ record }: { record: QuestionVO }) => {
       return h("div", {}, [
         h("div", {}, `${record.submitNum || 0} 次提交`),
         h("div", {}, `${record.acceptedNum || 0} 次通过`),
@@ -75,7 +79,7 @@ const columns = [
   },
 ];
 
-const doUpdate = (question: Question) => {
+const doUpdate = (question: QuestionVO) => {
   router.push({
     path: "/update/question",
     query: {
@@ -84,7 +88,7 @@ const doUpdate = (question: Question) => {
   });
 };
 
-const doDelete = async (question: Question) => {
+const doDelete = async (question: QuestionVO) => {
   loading.value = true;
   try {
     const res = await QuestionControllerService.deleteQuestionUsingPost({
@@ -130,9 +134,9 @@ const createNewQuestion = () => {
   router.push("/add/question");
 };
 
-const viewQuestion = (question: Question) => {
+const goQuestionPage = (questionVO: QuestionVO) => {
   router.push({
-    path: `/view/question/${question.id}`,
+    path: `/view/question/${questionVO.id}`,
   });
 };
 </script>
@@ -223,15 +227,13 @@ const viewQuestion = (question: Question) => {
           </div>
         </template>
         <template #title="{ record }">
-          <a-link @click="viewQuestion(record)">{{ record.title }}</a-link>
+          <a-link @click="goQuestionPage(record)">{{ record.title }}</a-link>
         </template>
         <template #tags="{ record }">
           <a-space wrap>
-            <a-tag
-              v-for="(tag, index) of JSON.parse(record.tags)"
-              :key="index"
-              >{{ tag }}</a-tag
-            >
+            <a-tag v-for="(tag, index) of record.tags" :key="index">{{
+              tag
+            }}</a-tag>
           </a-space></template
         >
         <template #createTime="{ record }">
