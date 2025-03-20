@@ -105,7 +105,6 @@ import { onMounted, ref, withDefaults, defineProps } from "vue";
 import {
   QuestionControllerService,
   QuestionSubmitAddRequest,
-  QuestionSubmitControllerService,
   QuestionVO,
 } from "../../../generated";
 import { Message } from "@arco-design/web-vue";
@@ -128,7 +127,7 @@ const doSubmit = async () => {
   // 确保设置了questionId
   form.value.questionId = props.id as any;
   // console.log("submit: ", form.value);
-  const res = await QuestionSubmitControllerService.doQuestionSubmitUsingPost(
+  const res = await QuestionControllerService.doQuestionSubmitUsingPost(
     form.value
   );
   if (res.code === 0) {
