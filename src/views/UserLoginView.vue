@@ -27,6 +27,14 @@ const handleSubmit = async () => {
     Message.error("登陆失败: " + res.message);
   }
 };
+
+// 添加跳转到注册页面的函数
+const goToRegister = () => {
+  router.push({
+    path: "/user/register",
+    replace: true, // 使用replace而不是push
+  });
+};
 </script>
 
 <template>
@@ -95,7 +103,7 @@ const handleSubmit = async () => {
       <div class="register-link">
         <p>
           还没有账号？
-          <a-link>立即注册</a-link>
+          <a-link @click="goToRegister">立即注册</a-link>
         </p>
       </div>
 

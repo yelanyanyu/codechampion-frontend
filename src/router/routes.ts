@@ -34,6 +34,9 @@ export const routes: Array<RouteRecordRaw> = [
         path: "/user/register",
         name: "用户注册",
         component: UserRegisterView,
+        meta: {
+          access: PageAccess.GUEST,
+        },
       },
     ],
   },

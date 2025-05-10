@@ -145,8 +145,8 @@ const goQuestionPage = (questionVO: QuestionVO) => {
   <div id="manageQuestionView">
     <div class="page-header">
       <div class="header-content">
-        <h2>题目管理</h2>
-        <p class="subtitle">管理和编辑您的编程题目</p>
+        <h2>浏览题目</h2>
+        <p class="subtitle">点击题目标题做题</p>
       </div>
       <div class="header-actions">
         <a-button type="primary" @click="createNewQuestion">
