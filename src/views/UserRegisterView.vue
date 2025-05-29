@@ -73,7 +73,7 @@ const goToLogin = () => {
       <!-- Logo -->
       <div class="logo-container">
         <img src="@/assets/logo.png" alt="Logo" class="logo" />
-        <h2>在线判题系统</h2>
+        <h2>CodeChampion 在线评测系统</h2>
       </div>
 
       <!-- Register Form -->
